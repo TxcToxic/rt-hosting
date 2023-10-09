@@ -1,4 +1,7 @@
 <?php
+// MADE BY TOXIC1835 WITH <3
+// Yes i reused the "leaked" source, but it was mine too lol
+
 // INITIALIZATION
 header('Content-Type: application/json');
 
@@ -75,7 +78,7 @@ $nodeName = "host01";
 // CHECK IF DB CONN ERROR
 if ($conn->connect_error) {
     $feedback["status"] = "connection_error";
-    $feedback["message"] = "An error occurred while trying to connect to the database";
+    $feedback["message"] = "an error occurred while trying to connect to the database";
     $feedback["err"] = "unknown";
 
     header("HTTP/2 500 Internal Server Error");
@@ -257,7 +260,7 @@ function getVmData($vmid)
 
 function restartVm($vmid)
 {
-    global $apiUrl, $apiToken, $nodeName;
+    global $apiUrl, $apiToken, $nodeName, $feedback;
 
     $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/reboot";
 
@@ -281,8 +284,6 @@ function restartVm($vmid)
         exit;
     }
 
-    global $feedback, $dcid;
-
     $feedback['status'] = "success";
     $feedback['message'] = "the server is restarting";
 
@@ -294,7 +295,7 @@ function restartVm($vmid)
 
 function stopVm($vmid)
 {
-    global $apiUrl, $apiToken, $nodeName;
+    global $apiUrl, $apiToken, $nodeName, $feedback;
 
     $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/stop";
 
@@ -318,8 +319,6 @@ function stopVm($vmid)
         exit;
     }
 
-    global $feedback, $dcid;
-
     $feedback['status'] = "success";
     $feedback['message'] = "the server is stopping";
 
@@ -331,7 +330,7 @@ function stopVm($vmid)
 
 function startVm($vmid)
 {
-    global $apiUrl, $apiToken, $nodeName;
+    global $apiUrl, $apiToken, $nodeName, $feedback;
 
     $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/start";
 
@@ -355,8 +354,6 @@ function startVm($vmid)
         exit;
     }
 
-    global $feedback, $dcid;
-
     $feedback['status'] = "success";
     $feedback['message'] = "the server is starting";
 
@@ -366,7 +363,72 @@ function startVm($vmid)
     exit;
 }
 
-// GET REQUESTS
+// CHANGE VMs PASSWORD
+function changePW($vmid, $newPassword)
+{
+    global $apiUrl, $apiToken, $nodeName, $feedback;
+
+    if (empty($newPassword)) {
+        header("HTTP/2 406 Not Acceptable");
+        $feedback['status'] = "not_set";
+        $feedback['message'] = "no password was set";
+        $feedback['err'] = "pw_empty";
+
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+
+    $jsonData = json_encode(array('cipassword' => $newPassword));
+    $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/config";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $cstatusUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        "Authorization: PVEAPIToken={$apiToken}",
+        "Content-Type: application/json",
+    ));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        header("HTTP/2 409 Conflict");
+        $feedback['status'] = "failed_pw_change";
+        $feedback['message'] = "an error occurred by changing the password of this server";
+        $feedback['err'] = "unknown";
+
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode === 200) {
+        $feedback['status'] = "success";
+        $feedback['message'] = "the password for the user root has been changed | dont forget to restart your server";
+
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+
+        echo $jsonData;
+        exit;
+    } else {
+        $feedback["status"] = "connection_error";
+        $feedback["message"] = "an error occurred while trying to change the password for root";
+        $feedback["err"] = "unknown";
+
+        header("HTTP/2 500 Internal Server Error");
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+}
+
+// MANAGING REQUESTS | USING FUNCTIONS
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     $vmid = (isset($_GET["sid"])) ? $_GET["sid"] : "";
     $operation = (isset($_GET["o"])) ? $_GET["o"] : "";
@@ -414,8 +476,11 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
     } else if ($operation === "start") {
         vmid_isset($vmid);
         if (vmOwnerCheck($vmid)) { startVm($vmid); }
-    }
-    else {
+    } else if ($operation === "change_password") {
+        $wishPassword = (isset($_POST["npw"])) ? $_POST["npw"] : "";
+        vmid_isset($vmid);
+        if (vmOwnerCheck($vmid)) { changePW($vmid, $wishPassword); }
+    } else {
         $feedback['status'] = "not_found";
         $feedback['message'] = "the given operation was not found";
         $feedback['err'] = "op_not_found";
