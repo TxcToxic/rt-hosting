@@ -5,11 +5,11 @@ headers = {
 }
 
 data = {
-    "o": "restart",
+    "op": "restart",
     "sid": "105"
 }
 
-response = requests.post("https://rt-hosting.eu/api/", data=data,headers=headers)
+response = requests.post("https://rt-hosting.eu/api/", data=data, headers=headers)
 
 print("Status Code:", response.status_code)
 print("Feedback:", response.text)
