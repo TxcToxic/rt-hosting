@@ -555,6 +555,25 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
     op_isset($operation);
 
+    $stmt = $conn->prepare("SELECT `done` FROM `servers` WHERE `dcid` = ? AND `vmid` = ?");
+    $stmt->bind_param("ss", $dcid, $vmid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $vm_is_done = false;
+
+    if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $vm_is_done = (bool)$row['done']; }
+
+    if (!($vm_is_done)) {
+        $feedback['status'] = "not_done";
+        $feedback['message'] = "your server or the payment wasn't done yet";
+        $feedback['err'] = "not_done";
+
+        header("HTTP/2 403 Forbidden");
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+
     if ($operation === "restart") {
         vmid_isset($vmid);
         if (vmOwnerCheck($vmid)) { restartVm($vmid); }
