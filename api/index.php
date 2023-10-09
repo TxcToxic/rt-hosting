@@ -401,10 +401,7 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         exit;
     }
 
-}
-
-// POST REQUESTS
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+} else if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $vmid = (isset($_POST["sid"])) ? $_POST["sid"] : "";
     $operation = (isset($_POST["o"])) ? $_POST["o"] : "";
 
@@ -422,13 +419,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $feedback['status'] = "not_found";
         $feedback['message'] = "the given operation was not found";
         $feedback['err'] = "op_not_found";
-        $feedback['debug'] = $operation;
 
         header("HTTP/2 404 Not Found");
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
         echo $jsonData;
         exit;
     }
+} else {
+    $feedback['status'] = "not_supported";
+    $feedback['message'] = "the method you are using to contact our api is not allowed or supported";
+    $feedback['err'] = "method_not_supported";
+
+    header("HTTP/2 405 Method Not Allowed");
+    $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+    echo $jsonData;
+    exit;
 }
 
 $conn->close();
