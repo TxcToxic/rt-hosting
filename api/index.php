@@ -192,7 +192,6 @@ function getVms()
     }
 }
 
-
 // Just to keep code cleaner
 function getVmIpAPI($vmid) 
 {
@@ -290,7 +289,80 @@ function restartVm($vmid)
     $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
 
     echo $jsonData;
+    exit;
+}
 
+function stopVm($vmid)
+{
+    global $apiUrl, $apiToken, $nodeName;
+
+    $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/stop";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $cstatusUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: PVEAPIToken={$apiToken}"));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        header("HTTP/2 409 Conflict");
+        $feedback['status'] = "failed_stop";
+        $feedback['message'] = "an error occurred by stopping this server";
+        $feedback['err'] = "unknown";
+
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+
+    global $feedback, $dcid;
+
+    $feedback['status'] = "success";
+    $feedback['message'] = "the server is stopping";
+
+    $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+
+    echo $jsonData;
+    exit;
+}
+
+function startVm($vmid)
+{
+    global $apiUrl, $apiToken, $nodeName;
+
+    $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/start";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $cstatusUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: PVEAPIToken={$apiToken}"));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        header("HTTP/2 409 Conflict");
+        $feedback['status'] = "failed_start";
+        $feedback['message'] = "an error occurred by starting this server";
+        $feedback['err'] = "unknown";
+
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+
+    global $feedback, $dcid;
+
+    $feedback['status'] = "success";
+    $feedback['message'] = "the server is starting";
+
+    $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+
+    echo $jsonData;
     exit;
 }
 
@@ -339,7 +411,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($operation === "restart") {
         vmid_isset($vmid);
         if (vmOwnerCheck($vmid)) { restartVm($vmid); }
-    } else {
+    } else if ($operation === "stop") {
+        vmid_isset($vmid);
+        if (vmOwnerCheck($vmid)) { stopVm($vmid); }
+    } else if ($operation === "start") {
+        vmid_isset($vmid);
+        if (vmOwnerCheck($vmid)) { startVm($vmid); }
+    }
+    else {
         $feedback['status'] = "not_found";
         $feedback['message'] = "the given operation was not found";
         $feedback['err'] = "op_not_found";
