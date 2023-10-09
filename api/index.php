@@ -79,7 +79,7 @@ $nodeName = "host01";
 if ($conn->connect_error) {
     $feedback["status"] = "db_connection_error";
     $feedback["message"] = "an error occurred while trying to connect to the database";
-    $feedback["err"] = "api_failure";
+    $feedback["err"] = "db_connection_failure";
 
     header("HTTP/2 500 Internal Server Error");
     $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
@@ -95,11 +95,59 @@ $result = $stmt->get_result();
 if ($result->num_rows !== 1) {
     $feedback['status'] = "unauthorized";
     $feedback['message'] = "you are not authorized";
-    $feedback['err'] = "db";
+    $feedback['err'] = "identification_failure";
     kill_401();
 }
 $row = $result->fetch_assoc();
 $dcid = $row['dcid'];
+$api_tariff = $row['tariff'];
+
+// GET CPR FROM api_tariffs
+$stmt = $conn->prepare("SELECT * FROM `api_tariffs` WHERE `tariff` = ?");
+$stmt->bind_param("s", $api_tariff);
+$stmt->execute();
+$result = $stmt->get_result();
+$cpr = 5;
+
+if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $cpr = $row['cpr']; }
+
+// GET CURRENT COINS
+$stmt = $conn->prepare("SELECT * FROM `coinsys` WHERE `dcid` = ?");
+$stmt->bind_param("s", $dcid);
+$stmt->execute();
+$result = $stmt->get_result();
+$curcoins = 0;
+
+if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $curcoins = $row['coins']; }
+
+// REMOVE COINS
+
+if (!($cpr <= 0)) {
+    if ($curcoins - $cpr >= 0) {
+        $stmt = $conn->prepare("UPDATE `coinsys` SET `coins` = `coins` - ? WHERE `dcid` = ?");
+        $stmt->bind_param("ss", $cpr, $dcid);
+
+        if (!($stmt->execute())) {
+            $feedback["status"] = "db_error";
+            $feedback["message"] = "an error occurred while trying to update your coins";
+            $feedback["err"] = "db_update_failure";
+
+            header("HTTP/2 500 Internal Server Error");
+            $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+            echo $jsonData;
+    exit;
+        }
+    } else {
+        $feedback["status"] = "user_error";
+        $feedback["message"] = "upgrade your api tariff, buy some coins or write some messages in our discord and help people";
+        $feedback["err"] = "not_enough_coins";
+
+        header("HTTP/2 409 Conflict");
+        $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
+        echo $jsonData;
+        exit;
+    }
+}
 
 // CHECK VM OWNER
 function vmOwnerCheck($vmid) {
