@@ -77,9 +77,9 @@ $nodeName = "host01";
 
 // CHECK IF DB CONN ERROR
 if ($conn->connect_error) {
-    $feedback["status"] = "connection_error";
+    $feedback["status"] = "db_connection_error";
     $feedback["message"] = "an error occurred while trying to connect to the database";
-    $feedback["err"] = "unknown";
+    $feedback["err"] = "api_failure";
 
     header("HTTP/2 500 Internal Server Error");
     $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
@@ -148,6 +148,33 @@ function getVmIp($vmid)
     return explode("/", $vmIP)[0];
 }
 
+// GET VM STATUS 
+function getVmStatus($vmid)
+{
+    global $apiUrl, $apiToken, $nodeName;
+
+    $cstatusUrl = "{$apiUrl}/nodes/{$nodeName}/qemu/{$vmid}/status/current";
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $cstatusUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array("Authorization: PVEAPIToken={$apiToken}"));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false) {
+        return "no_response";
+    }
+
+    $data = json_decode($response, true);
+    if ($data === null || !isset($data["data"]["status"])) {
+        return "no_status_found";
+    }
+
+    return $data["data"]["status"];
+}
+
 // GET VMs
 function getVms()
 {
@@ -165,6 +192,7 @@ function getVms()
             $vmId = $row['vmid'];
 
             $vmData = array(
+                'status' => getVmStatus($vmId),
                 'ip' => getVmIp($vmId),
                 'pack' => $row['pack'],
                 'done' => ($row['done'] == 1) ? true : false,
@@ -242,6 +270,7 @@ function getVmData($vmid)
     $row = $stmt->get_result()->fetch_assoc();
 
     $vmArray = array(
+        'status' => getVmStatus($vmid),
         'ip' => getVmIp($vmid),
         'pack' => $row['pack'],
         'done' => ($row['done'] === 1) ? true : false,
@@ -277,7 +306,7 @@ function restartVm($vmid)
         header("HTTP/2 409 Conflict");
         $feedback['status'] = "failed_restart";
         $feedback['message'] = "an error occurred by restarting this server";
-        $feedback['err'] = "unknown";
+        $feedback['err'] = "no_response";
 
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
         echo $jsonData;
@@ -312,7 +341,7 @@ function stopVm($vmid)
         header("HTTP/2 409 Conflict");
         $feedback['status'] = "failed_stop";
         $feedback['message'] = "an error occurred by stopping this server";
-        $feedback['err'] = "unknown";
+        $feedback['err'] = "no_response";
 
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
         echo $jsonData;
@@ -347,7 +376,7 @@ function startVm($vmid)
         header("HTTP/2 409 Conflict");
         $feedback['status'] = "failed_start";
         $feedback['message'] = "an error occurred by starting this server";
-        $feedback['err'] = "unknown";
+        $feedback['err'] = "no_response";
 
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
         echo $jsonData;
@@ -417,9 +446,9 @@ function changePW($vmid, $newPassword)
         echo $jsonData;
         exit;
     } else {
-        $feedback["status"] = "connection_error";
+        $feedback["status"] = "unknown_backend_api_failure";
         $feedback["message"] = "an error occurred while trying to change the password for root";
-        $feedback["err"] = "unknown";
+        $feedback["err"] = "api_failure";
 
         header("HTTP/2 500 Internal Server Error");
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
