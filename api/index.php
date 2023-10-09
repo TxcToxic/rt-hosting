@@ -457,21 +457,30 @@ function changePW($vmid, $newPassword)
     }
 }
 
-// MANAGING REQUESTS | USING FUNCTIONS
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $vmid = (isset($_GET["sid"])) ? $_GET["sid"] : "";
-    $operation = (isset($_GET["o"])) ? $_GET["o"] : "";
 
-    if (empty($operation)) {
+function op_isset($operation) 
+{
+    global $feedback;
+
+    if (empty($operation) || !isset($operation)) { 
+        header("HTTP/2 409 Conflict");
         $feedback['status'] = "not_set";
         $feedback['message'] = "no operation was set";
         $feedback['err'] = "op_empty";
 
-        header("HTTP/2 409 Not Found");
         $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
         echo $jsonData;
         exit;
     }
+    return true;
+}
+
+// MANAGING REQUESTS | USING FUNCTIONS
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    $vmid = (isset($_GET["sid"])) ? $_GET["sid"] : "";
+    $operation = (isset($_GET["op"])) ? $_GET["op"] : "";
+
+    op_isset($operation);
 
     if ($operation === "get_servers") {
         getVms();
@@ -494,7 +503,9 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 
 } else if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $vmid = (isset($_POST["sid"])) ? $_POST["sid"] : "";
-    $operation = (isset($_POST["o"])) ? $_POST["o"] : "";
+    $operation = (isset($_POST["op"])) ? $_POST["op"] : "";
+
+    op_isset($operation);
 
     if ($operation === "restart") {
         vmid_isset($vmid);
