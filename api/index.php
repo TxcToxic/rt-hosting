@@ -112,20 +112,20 @@ $cpr = 5;
 if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $cpr = $row['cpr']; }
 
 // GET CURRENT COINS
-$stmt = $conn->prepare("SELECT * FROM `coinsys` WHERE `dcid` = ?");
-$stmt->bind_param("s", $dcid);
+$stmt = $conn->prepare("SELECT * FROM `api_coins` WHERE `rttoken` = ?");
+$stmt->bind_param("s", $token);
 $stmt->execute();
 $result = $stmt->get_result();
 $curcoins = 0;
 
-if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $curcoins = $row['coins']; }
+if ($result->num_rows === 1) { $row = $result->fetch_assoc(); $curcoins = $row['api_coins']; }
 
 // REMOVE COINS
 
 if (!($cpr <= 0)) {
     if ($curcoins - $cpr >= 0) {
-        $stmt = $conn->prepare("UPDATE `coinsys` SET `coins` = `coins` - ? WHERE `dcid` = ?");
-        $stmt->bind_param("ss", $cpr, $dcid);
+        $stmt = $conn->prepare("UPDATE `api_coins` SET `api_coins` = `api_coins` - ? WHERE `rttoken` = ?");
+        $stmt->bind_param("ss", $cpr, $token);
 
         if (!($stmt->execute())) {
             $feedback["status"] = "db_error";
@@ -135,11 +135,11 @@ if (!($cpr <= 0)) {
             header("HTTP/2 500 Internal Server Error");
             $jsonData = json_encode($feedback, JSON_PRETTY_PRINT);
             echo $jsonData;
-    exit;
+            exit;
         }
     } else {
         $feedback["status"] = "user_error";
-        $feedback["message"] = "upgrade your api tariff, buy some coins or write some messages in our discord and help people";
+        $feedback["message"] = "upgrade your api-tariff or increase api-coins wallet";
         $feedback["err"] = "not_enough_coins";
 
         header("HTTP/2 409 Conflict");
