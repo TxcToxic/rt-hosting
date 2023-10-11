@@ -1,0 +1,133 @@
+@font-face {
+    font-family: "Pop-R";
+    src: url("/add/Poppins-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Pop-L";
+    src: url("/add/Poppins-Light.ttf");
+}
+
+* {
+    font-family: "Pop-R";
+    color: #EEEEEE
+}
+
+::selection {
+    background-color: #005459;
+    color: #95f1f6;
+}
+
+body {
+    background-color: #222831;
+    background: linear-gradient(to bottom right, #222831, #000000);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    text-align: center;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+.hl {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.hr {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+a {
+    text-decoration: none;
+    color:#00ADB5;
+    transition: all 0.2s ease-in-out;
+}
+a:hover {
+    color: #00e6f2;
+    text-decoration: underline;
+    animation: pulsate 1.8s ease-in-out infinite;
+}
+
+.line {
+    width: 80%;
+    border: none;
+    border-top: 2px solid #696969;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.open {
+    color: #00d8e4;
+}
+
+.done {
+    color: #007278;
+}
+
+.tasks {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.task {
+    background-color: #393E46;
+    width: 50%;
+    margin: 15px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px 10px #393E46aa;
+    transition: all 0.45s ease-in-out;
+}
+.task:hover {
+    background-color: #494f59;
+    border-radius: 15px;
+    box-shadow: 0 0 30px 15px #494f59aa;
+}
+
+.task-title {
+    color: #00d8e4;
+    font-size: 25px;
+}
+.task-title-done {
+    color: #007278;
+    font-size: 25px;
+}
+.task-inner-title {
+    margin-bottom: -15px;
+}
+
+input[type="submit"] {
+    background-color: #5f6874;
+    width: 80px;
+    margin: 10px;
+    margin-bottom: 20px;
+    padding: 6px;
+    border-width: 0px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px 2px #2d3137;
+    transition: all 0.28s ease-in-out;
+}
+input[type="submit"]:hover {
+    background-color: #8597b6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px 8px #40454e;
+}
+
+@keyframes pulsate {
+    0% {
+        text-shadow: 0 0 8px #00ADB5;
+    }
+    50% {
+        text-shadow: 0 0 13px #00e6f2;
+    }
+    100% {
+        text-shadow: 0 0 8px #00ADB5;
+    }
+}
