@@ -9,7 +9,7 @@
 }
 
 * {
-    font-family: "Pop-R";
+    font-family: "Pop-L";
     color: #EEEEEE
 }
 
@@ -19,6 +19,7 @@
 }
 
 body {
+    margin: 0;
     background-color: #222831;
     background: linear-gradient(to bottom right, #222831, #000000);
     background-repeat: no-repeat;
@@ -61,6 +62,8 @@ a:hover {
 }
 
 .header {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100px;
     display: flex;
     justify-content: space-between;
 }

@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>RT-Hosting | Team Tasks</title>
+    <title>RTH - Team Tasks</title>
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <div class="header">
         <div class="hl">
-            <h1>RT-Hosting | Team Tasks</h1>
+            <h1>RT - Team Tasks</h1>
         </div>
         <div class="hr">
             <h3><a href="/">Homepage</a></h3>
@@ -149,8 +149,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         } else {
             echo "<script>alert(\"nice try :)\"); console.error(\"you failed to exploit our website :c!\");</script>";
         }
-
     }
+    $ref = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'https://rt-hosting.eu/teamtasks/';
+    header("Location:".$ref);
 }
 
 $stmt = $conn->prepare("SELECT * FROM `teamtasks` WHERE `dcid`=?");
@@ -163,10 +164,20 @@ if ($result->num_rows > 0) {
     <h2 class="open">Open Tasks</h2>
     <div class="tasks">
         <?php
+                $open_tasks = 0;
                 foreach ($result as $row) {
                     if ((bool)$row['done'] === false) {
-                        echo "<div class=\"task\"><h3 class=\"task-title\">Title: ".$row['task_title']."</h3><h4 class=\"task-inner-title\">Description:</h4><p>".$row['task']."</p><h4 class=\"task-inner-title\">Created By:</h4><p>".$row['creator_dcid']."</p><h4 class=\"task-inner-title\">Created At:</h4><p>".$row['creation']."</p><h4 class=\"task-inner-title\">Deadline:</h4><p>".$row['deadline']."</p><form action='".$_SERVER['PHP_SELF']."' method='POST'><input type='hidden' name='task_id' value='".$row['id']."'><input type='submit' value='Done'></form></div>";
+                        if ($open_tasks < 2)
+                        {
+                            echo "<div class=\"task\"><h3 class=\"task-title\">Title: ".$row['task_title']."</h3><h4 class=\"task-inner-title\">Description:</h4><p>".str_replace("\n", "<br>", $row['task'])."</p><h4 class=\"task-inner-title\">Created By:</h4><p>".$row['creator_dcid']."</p><h4 class=\"task-inner-title\">Created At:</h4><p>".$row['creation']."</p><h4 class=\"task-inner-title\">Deadline:</h4><p>".$row['deadline']."</p><form action='".$_SERVER['PHP_SELF']."' method='POST'><input type='hidden' name='task_id' value='".$row['id']."'><input type='submit' value='Done'></form></div>";
+                        }
+                        $open_tasks++;
                     }
+                }
+                if ($open_tasks > 2) {
+                    $open_tasks = $open_tasks - 2;
+
+                    echo "<div class=\"task\"><p>+".$open_tasks." more tasks</p></div>";
                 }
         ?>
     </div>

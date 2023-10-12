@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS `api` (
   UNIQUE KEY `dcid` (`dcid`),
   UNIQUE KEY `rttoken` (`rttoken`),
   UNIQUE KEY `secret` (`secret`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `api_coins` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `api_coins` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `rttoken` (`rttoken`),
   UNIQUE KEY `dcid` (`dcid`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `api_tariffs` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS `api_tariffs` (
   `tariff_name` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `tariff` (`tariff`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `api_tariffs` (`id`, `tariff`, `cpr`, `tariff_name`) VALUES
 (1, 'u1', 5, 'standard'),
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `coinsys` (
   `coins` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `dcid` (`dcid`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `prices` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `prices` (
   `traffic` varchar(500) NOT NULL,
   `price` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `prices` (`id`, `root`, `pack`, `cores`, `ram`, `storage`, `traffic`, `price`) VALUES
 (1, 1, 'Beginner', 1, 3, 30, 'Unlimited', 5),
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `servers` (
   `name` varchar(5000) NOT NULL DEFAULT 'Not set',
   PRIMARY KEY (`id`),
   UNIQUE KEY `vmid` (`vmid`,`dcid`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `teamtasks` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -105,13 +105,13 @@ CREATE TABLE IF NOT EXISTS `teamtasks` (
   `creator_dcid` bigint(20) NOT NULL,
   `deadline` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 CREATE TABLE IF NOT EXISTS `teamtasks_access` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `dcid` bigint(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

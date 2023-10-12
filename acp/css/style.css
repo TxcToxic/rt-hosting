@@ -20,18 +20,18 @@
 
 body {
     margin: 0;
+    background-color: #f0f0f0;
     background-color: #222831;
     background: linear-gradient(to bottom right, #222831, #000000);
     background-repeat: no-repeat;
     background-attachment: fixed;
-    text-align: center;
 }
 
 .header {
     background-color: rgba(0, 0, 0, 0.5);
-    height: 100px;
     display: flex;
     justify-content: space-between;
+    height: 100px;
 }
 .hl {
     width: 100%;
@@ -47,6 +47,69 @@ body {
     gap: 15px;
 }
 
+.navbar {
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 200px;
+    height: 100%;
+    position: fixed;
+    overflow: auto;
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+}
+
+.navbar a {
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    display: block;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    animation: none;
+}
+
+.navbar a:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    color: black;
+    animation: none;
+}
+
+.content {
+    margin-left: 200px;
+    margin-top: 100px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.content-inner {
+    background-color: #393E46;
+    width: 75%;
+    height: 50%;
+    margin: 15px;
+    border-radius: 25px;
+    box-shadow: 0 0 20px 10px #393E46aa;
+    transition: all 0.45s ease-in-out;
+}
+.content-inner:hover {
+    background-color: #494f59;
+    border-radius: 15px;
+    box-shadow: 0 0 30px 15px #494f59aa;
+}
+
+h1 {
+    font-family: "Pop-R";
+    font-weight: 900;
+}
+
+h2 {
+    font-family: "Pop-R";
+    color: #00ADB5;
+}
+
 a {
     text-decoration: none;
     color:#00ADB5;
@@ -56,82 +119,6 @@ a:hover {
     color: #00e6f2;
     text-decoration: underline;
     animation: pulsate 1.8s ease-in-out infinite;
-}
-
-.line {
-    width: 80%;
-    border: none;
-    border-top: 2px solid #696969;
-    margin-top: 30px;
-    margin-bottom: 30px;
-}
-
-.forbidden {
-    color: #7d0000;
-    font-size: 25px;
-    transition: all 0.4s ease-in-out;
-}
-.forbidden:hover {
-    cursor: default;
-    color: #d10000;
-    font-size: 25px;
-}
-
-.open {
-    color: #00d8e4;
-}
-
-.done {
-    color: #007278;
-}
-
-.tasks {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.task {
-    background-color: #393E46;
-    width: 50%;
-    margin: 15px;
-    border-radius: 25px;
-    box-shadow: 0 0 20px 10px #393E46aa;
-    transition: all 0.45s ease-in-out;
-}
-.task:hover {
-    background-color: #494f59;
-    border-radius: 15px;
-    box-shadow: 0 0 30px 15px #494f59aa;
-}
-
-.task-title {
-    color: #00d8e4;
-    font-size: 25px;
-}
-.task-title-done {
-    color: #007278;
-    font-size: 25px;
-}
-.task-inner-title {
-    margin-bottom: -15px;
-}
-
-input[type="submit"] {
-    background-color: #5f6874;
-    width: 80px;
-    margin: 10px;
-    margin-bottom: 20px;
-    padding: 6px;
-    border-width: 0px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px 2px #2d3137;
-    transition: all 0.28s ease-in-out;
-}
-input[type="submit"]:hover {
-    background-color: #8597b6;
-    border-radius: 8px;
-    box-shadow: 0 0 10px 8px #40454e;
 }
 
 @keyframes pulsate {
