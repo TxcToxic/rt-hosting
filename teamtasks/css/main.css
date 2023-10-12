@@ -63,6 +63,17 @@ a:hover {
     margin-bottom: 30px;
 }
 
+.forbidden {
+    color: #7d0000;
+    font-size: 25px;
+    transition: all 0.4s ease-in-out;
+}
+.forbidden:hover {
+    cursor: default;
+    color: #d10000;
+    font-size: 25px;
+}
+
 .open {
     color: #00d8e4;
 }

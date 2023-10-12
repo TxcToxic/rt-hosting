@@ -277,6 +277,7 @@ function changePW($vmid, $newPassword)
         </div>
         <div class="hr">
             <h3><a href="/">Homepage</a></h3>
+            <h3><a href="/teamtasks">Team Tasks</a></h3>
             <h3><a href="https://discord.com/invite/J6CR7tjXhY" target="_blank">Discord</a></h3>
         </div>
     </div>
