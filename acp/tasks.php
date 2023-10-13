@@ -22,8 +22,6 @@ session_set_cookie_params($sessionLifetime);
 ini_set('session.gc_maxlifetime', $sessionLifetime);
 session_start();
 
-$done_tasks_webhook = "https://discord.com/api/webhooks/1162064165842718834/oqiyDAhxkbQ3VWIvpfAkMFpeKg4A6_KL25exQtrYFIkLxd6fLX9TK7oE5ksBqLwEtodz";
-
 $servername = "db-node-01.toxic1835.xyz";
 $username = "rth";
 $password = "KJ72yQn(m8_6)Zar";
@@ -31,6 +29,7 @@ $dbname = "rth";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
+$tasks_webhook = "https://discord.com/api/webhooks/1162487099891650600/mGfj5keVIbeobI-xrVC3zfE0nTyfXe0OFA4f6xQSITVn7-j0yrZbSfxgdLoaXzS54Zm8";
 
 if (session_status() == PHP_SESSION_ACTIVE) {
     if (!isset($_SESSION['discord_access_token'])) {
@@ -189,6 +188,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: ".$ref);
                 exit;
             }
+
+            $data = [
+                "content" => "<@".$t_op."> (".$t_op.") you got a **new Task** from <@".$dcid."> (".$dcid.") \n\n **Deadline:** ".$task_deadline,
+            ];
+
+            $jsonData = json_encode($data);
+
+            $ch = curl_init($tasks_webhook);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            curl_exec($ch);
+            curl_close($ch);
+
         } else {
             echo "<script>alert(\"Method not allowed!\"); console.error(\"this method is not allowed!\");</script>";
             header("Location: ".$ref);
