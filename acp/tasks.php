@@ -220,11 +220,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <a href="tasks.php">Team Tasks</a>
     </div>
     <div class="content">
-        <?php
-        if (isset($feedback) && !empty($feedback)) {
-            echo "<div class=\"content-inner\"><h2>Feedback:</h2><p>".$feedback."</p></div>";
-        }
-        ?>
         <div class="content-inner">
             <h2>Task Creator</h2>
             <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="POST">
