@@ -178,7 +178,7 @@ if ($result->num_rows > 0) {
                 if ($open_tasks > 2) {
                     $open_tasks = $open_tasks - 2;
 
-                    echo "<div class=\"task\"><p>+".$open_tasks." more tasks</p></div>";
+                    echo "<div class=\"task\"><p>+".$open_tasks." more hidden tasks</p></div>";
                 }
         ?>
     </div>
